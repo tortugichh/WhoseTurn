@@ -9,6 +9,9 @@ data class Chore(
     val currentParticipant: String
         get() = participants[currentIndex]
 
+    val turnNumber: Int
+        get() = currentIndex + 1
+
     private val nextIndex: Int
         get() = (currentIndex + 1) % participants.size
 
