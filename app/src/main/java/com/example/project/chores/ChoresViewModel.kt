@@ -23,4 +23,8 @@ class ChoresViewModel : ViewModel() {
             }
         }
     }
+
+    fun resetChores() {
+        _chores.value = loadDemoChores()
+    }
 }

@@ -5,6 +5,7 @@ data class Chore(
     val title: String,
     val participants: List<String>,
     val currentIndex: Int = 0,
+    val lastCompletedBy: String? = null,
 ) {
     val currentParticipant: String
         get() = participants[currentIndex]
@@ -18,5 +19,8 @@ data class Chore(
     val nextParticipant: String
         get() = participants[nextIndex]
 
-    fun advance(): Chore = copy(currentIndex = nextIndex)
+    fun advance(): Chore = copy(
+        currentIndex = nextIndex,
+        lastCompletedBy = currentParticipant,
+    )
 }
