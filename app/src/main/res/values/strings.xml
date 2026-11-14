@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Project</string>
+    <string name="chores_home_title">Чья очередь?</string>
+    <string name="chore_current_assignee">Сейчас очередь: %1$s</string>
+    <string name="chore_turn_position">Ход %1$d из %2$d</string>
+    <string name="chore_last_completed_by">Последний исполнитель: %1$s</string>
+    <string name="chore_complete">Выполнено</string>
+    <string name="chores_reset_action">Сбросить очереди</string>
+    <string name="chores_reset_title">Сбросить все очереди?</string>
+    <string name="chores_reset_description">В каждом деле очередь вернётся к первому участнику. Отметки о последнем выполнении будут удалены.</string>
+    <string name="chores_reset_confirm">Сбросить</string>
+    <string name="chores_reset_cancel">Отмена</string>
 </resources>
