@@ -8,4 +8,9 @@ data class Chore(
 ) {
     val currentParticipant: String
         get() = participants[currentIndex]
+
+    fun advance(): Chore {
+        val nextIndex = (currentIndex + 1) % participants.size
+        return copy(currentIndex = nextIndex)
+    }
 }
