@@ -1,6 +1,11 @@
 <resources>
-    <string name="app_name">Project</string>
-    <string name="chores_home_title">Чья очередь?</string>
+    <string name="app_name">Чья очередь?</string>
+    <string name="chores_home_title">@string/app_name</string>
+    <string name="chore_list_subtitle">Выберите дело, чтобы посмотреть очередь</string>
+    <string name="chore_detail_title">Детали дела</string>
+    <string name="chore_rotation_title">Очередь участников</string>
+    <string name="chore_participant_current">Сейчас</string>
+    <string name="chore_participant_next">Следующий</string>
     <string name="chore_current_assignee">Сейчас очередь: %1$s</string>
     <string name="chore_turn_position">Ход %1$d из %2$d</string>
     <string name="chore_last_completed_by">Последний исполнитель: %1$s</string>
