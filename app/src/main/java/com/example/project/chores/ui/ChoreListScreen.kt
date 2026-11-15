@@ -47,5 +47,12 @@ fun ChoreListScreen(
                 onClick = { onOpenChore(chore.id) },
             )
         }
+
+        item {
+            ResetChoresButton(
+                enabled = chores.any { it.lastCompletedBy != null },
+                onReset = onReset,
+            )
+        }
     }
 }
