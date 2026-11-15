@@ -57,6 +57,12 @@ fun ChoreDetailScreen(
                     text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
                     style = MaterialTheme.typography.bodyLarge,
                 )
+                chore.lastCompletedBy?.let { name ->
+                    Text(
+                        text = stringResource(R.string.chore_last_completed_by, name),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         }
 
