@@ -140,7 +140,7 @@ private fun ParticipantRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "$position.",
+                text = stringResource(R.string.chore_participant_position, position),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

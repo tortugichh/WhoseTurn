@@ -6,6 +6,7 @@
     <string name="chore_rotation_title">Очередь участников</string>
     <string name="chore_participant_current">Сейчас</string>
     <string name="chore_participant_next">Следующий</string>
+    <string name="chore_participant_position">%1$d.</string>
     <string name="chore_current_assignee">Сейчас очередь: %1$s</string>
     <string name="chore_turn_position">Ход %1$d из %2$d</string>
     <string name="chore_last_completed_by">Последний исполнитель: %1$s</string>
