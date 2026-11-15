@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.project.R
@@ -42,7 +43,9 @@ fun ChoreDetailScreen(
         )
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics(mergeDescendants = true) {},
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -121,7 +124,9 @@ private fun ParticipantRow(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {},
         shape = MaterialTheme.shapes.medium,
         color = if (isCurrent) {
             MaterialTheme.colorScheme.secondaryContainer
