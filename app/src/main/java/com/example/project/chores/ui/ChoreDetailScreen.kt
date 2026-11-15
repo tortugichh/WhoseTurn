@@ -2,16 +2,20 @@ package com.example.project.chores.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
@@ -51,6 +55,83 @@ fun ChoreDetailScreen(
                 Text(
                     text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
                     style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+
+        ParticipantRotation(chore = chore)
+    }
+}
+
+@Composable
+private fun ParticipantRotation(
+    chore: Chore,
+    modifier: Modifier = Modifier,
+) {
+    val nextIndex = (chore.currentIndex + 1) % chore.participants.size
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.chore_rotation_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        chore.participants.forEachIndexed { index, name ->
+            val label = when (index) {
+                chore.currentIndex -> stringResource(R.string.chore_participant_current)
+                nextIndex -> stringResource(R.string.chore_participant_next)
+                else -> null
+            }
+            ParticipantRow(
+                position = index + 1,
+                name = name,
+                label = label,
+                isCurrent = index == chore.currentIndex,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ParticipantRow(
+    position: Int,
+    name: String,
+    label: String?,
+    isCurrent: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = if (isCurrent) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "$position.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal,
+            )
+            if (label != null) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
