@@ -6,10 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.project.chores.ChoresViewModel
+import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 
 @Composable
@@ -29,9 +32,25 @@ fun ChoresApp(
             composable(ChoreRoutes.LIST) {
                 ChoreListScreen(
                     chores = chores,
-                    onOpenChore = {},
+                    onOpenChore = { taskId ->
+                        navController.navigate(ChoreRoutes.detail(taskId))
+                    },
                     onReset = viewModel::resetChores,
                 )
+            }
+            composable(
+                route = ChoreRoutes.DETAIL,
+                arguments = listOf(navArgument(ChoreRoutes.TASK_ID) { type = NavType.StringType }),
+            ) { entry ->
+                val taskId = entry.arguments?.getString(ChoreRoutes.TASK_ID)
+                val chore = chores.find { it.id == taskId }
+
+                if (chore != null) {
+                    ChoreDetailScreen(
+                        chore = chore,
+                        onComplete = { viewModel.complete(chore.id) },
+                    )
+                }
             }
         }
     }
