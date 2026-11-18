@@ -61,7 +61,9 @@ fun ChoresApp(
                 ChoreListScreen(
                     chores = chores,
                     onOpenChore = { taskId ->
-                        navController.navigate(ChoreRoutes.detail(taskId))
+                        navController.navigate(ChoreRoutes.detail(taskId)) {
+                            launchSingleTop = true
+                        }
                     },
                     onReset = viewModel::resetChores,
                 )
