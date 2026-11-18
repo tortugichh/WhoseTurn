@@ -23,6 +23,7 @@ import com.example.project.R
 import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
+import com.example.project.chores.ui.ChoreNotFoundScreen
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +80,10 @@ fun ChoresApp(
                     ChoreDetailScreen(
                         chore = chore,
                         onComplete = { viewModel.complete(chore.id) },
+                    )
+                } else {
+                    ChoreNotFoundScreen(
+                        onBackToList = { navController.popBackStack(ChoreRoutes.LIST, false) },
                     )
                 }
             }

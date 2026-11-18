@@ -4,6 +4,8 @@
     <string name="chore_list_subtitle">Выберите дело, чтобы посмотреть очередь</string>
     <string name="chore_detail_title">Детали дела</string>
     <string name="chore_navigate_back">Назад</string>
+    <string name="chore_not_found">Дело не найдено</string>
+    <string name="chore_back_to_list">К списку</string>
     <string name="chore_rotation_title">Очередь участников</string>
     <string name="chore_participant_current">Сейчас</string>
     <string name="chore_participant_next">Следующий</string>
