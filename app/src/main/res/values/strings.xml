@@ -51,4 +51,8 @@
     <string name="settings_theme_dark">Тёмная</string>
     <string name="settings_turns_title">Очереди</string>
     <string name="settings_turns_description">Вернуть очередь в каждом деле к первому участнику.</string>
+    <string name="people_title">Люди</string>
+    <string name="people_subtitle">Все дела идут по очереди в этом порядке</string>
+    <string name="people_empty">Пока никого нет. Добавьте людей, чтобы делить дела.</string>
+    <string name="people_load_error">Не удалось загрузить список людей</string>
 </resources>
