@@ -20,4 +20,7 @@
     <string name="chores_reset_description">В каждом деле очередь вернётся к первому участнику. Отметки о последнем выполнении будут удалены.</string>
     <string name="chores_reset_confirm">Сбросить</string>
     <string name="chores_reset_cancel">Отмена</string>
+    <string name="chores_load_error">Не удалось загрузить дела</string>
+    <string name="chores_write_error">Не удалось сохранить изменения</string>
+    <string name="chores_retry">Повторить</string>
 </resources>

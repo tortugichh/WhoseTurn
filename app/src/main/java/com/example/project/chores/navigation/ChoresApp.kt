@@ -1,6 +1,12 @@
 package com.example.project.chores.navigation
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -10,12 +16,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,11 +33,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.project.R
+import com.example.project.chores.Chore
+import com.example.project.chores.ChoresEvent
+import com.example.project.chores.ChoresUiState
 import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 import com.example.project.chores.ui.ChoreNotFoundScreen
-import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,11 +48,21 @@ fun ChoresApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
-    val chores by viewModel.chores.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val resetMessage = stringResource(R.string.chores_reset_done)
+    val writeError = stringResource(R.string.chores_write_error)
+
+    LaunchedEffect(viewModel, resetMessage, writeError) {
+        viewModel.events.collect { event ->
+            val message = when (event) {
+                ChoresEvent.TurnsReset -> resetMessage
+                ChoresEvent.WriteFailed -> writeError
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -69,35 +89,67 @@ fun ChoresApp(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(ChoreRoutes.LIST) {
-                ChoreListScreen(
-                    chores = chores,
-                    onOpenChore = { taskId ->
-                        navController.navigate(ChoreRoutes.detail(taskId)) {
-                            launchSingleTop = true
-                        }
-                    },
-                    onReset = {
-                        viewModel.resetChores()
-                        scope.launch { snackbarHostState.showSnackbar(resetMessage) }
-                    },
-                )
+                WithChores(state, viewModel::retry) { chores ->
+                    ChoreListScreen(
+                        chores = chores,
+                        onOpenChore = { taskId ->
+                            navController.navigate(ChoreRoutes.detail(taskId)) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onReset = viewModel::resetChores,
+                    )
+                }
             }
             composable(
                 route = ChoreRoutes.DETAIL,
                 arguments = listOf(navArgument(ChoreRoutes.TASK_ID) { type = NavType.StringType }),
             ) { entry ->
-                val taskId = entry.arguments?.getString(ChoreRoutes.TASK_ID)
-                val chore = chores.find { it.id == taskId }
+                WithChores(state, viewModel::retry) { chores ->
+                    val taskId = entry.arguments?.getString(ChoreRoutes.TASK_ID)
+                    val chore = chores.find { it.id == taskId }
 
-                if (chore != null) {
-                    ChoreDetailScreen(
-                        chore = chore,
-                        onComplete = { viewModel.complete(chore.id) },
-                    )
-                } else {
-                    ChoreNotFoundScreen(
-                        onBackToList = { navController.popBackStack(ChoreRoutes.LIST, false) },
-                    )
+                    if (chore != null) {
+                        ChoreDetailScreen(
+                            chore = chore,
+                            onComplete = { viewModel.complete(chore.id) },
+                        )
+                    } else {
+                        ChoreNotFoundScreen(
+                            onBackToList = { navController.popBackStack(ChoreRoutes.LIST, false) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WithChores(
+    state: ChoresUiState,
+    onRetry: () -> Unit,
+    content: @Composable (List<Chore>) -> Unit,
+) {
+    when (state) {
+        is ChoresUiState.Ready -> content(state.chores)
+        ChoresUiState.Loading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CircularProgressIndicator()
+        }
+        ChoresUiState.Error -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(stringResource(R.string.chores_load_error))
+                Button(onClick = onRetry) {
+                    Text(stringResource(R.string.chores_retry))
                 }
             }
         }

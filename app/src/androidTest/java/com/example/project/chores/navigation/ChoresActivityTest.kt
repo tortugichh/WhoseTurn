@@ -12,7 +12,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ChoresActivityTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val database = FreshChoresDatabase()
+
+    @get:Rule(order = 1)
     val compose = createAndroidComposeRule<MainActivity>()
 
     @Test

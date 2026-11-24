@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProjectTheme {
-                val choresViewModel: ChoresViewModel = viewModel()
+                val choresViewModel: ChoresViewModel = viewModel(factory = ChoresViewModel.Factory)
                 ChoresApp(viewModel = choresViewModel)
             }
         }

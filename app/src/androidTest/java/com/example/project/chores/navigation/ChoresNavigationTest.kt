@@ -22,7 +22,10 @@ import org.junit.Rule
 import org.junit.Test
 
 class ChoresNavigationTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val database = FreshChoresDatabase()
+
+    @get:Rule(order = 1)
     val compose = createAndroidComposeRule<ComponentActivity>()
 
     private lateinit var navController: NavHostController
@@ -30,7 +33,7 @@ class ChoresNavigationTest {
     @Before
     fun openApp() {
         compose.setContent {
-            val choresViewModel: ChoresViewModel = viewModel()
+            val choresViewModel: ChoresViewModel = viewModel(factory = ChoresViewModel.Factory)
             navController = rememberNavController()
             ProjectTheme {
                 ChoresApp(viewModel = choresViewModel, navController = navController)
