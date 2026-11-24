@@ -61,4 +61,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.datastore.preferences)
 }
