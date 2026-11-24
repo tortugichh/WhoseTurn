@@ -5,17 +5,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
+import com.example.project.people.ui.PersonAvatar
 
 @Composable
 fun ChoreCard(
@@ -44,27 +48,27 @@ fun ChoreCard(
                     text = chore.title,
                     style = MaterialTheme.typography.titleLarge,
                 )
-                if (participant == null) {
-                    Text(
-                        text = stringResource(R.string.chore_add_people_first),
-                        style = MaterialTheme.typography.bodyMedium,
+                ChoreAssigneeLabel(
+                    participant = participant,
+                    style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.chore_current_assignee, participant),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                    ),
+                    label = R.string.chore_card_assignee,
+                )
             }
 
-            TextButton(onClick = onComplete, enabled = participant != null) {
-                Text(stringResource(R.string.chore_complete))
+            if (participant != null) {
+                PersonAvatar(participant)
+            }
+            FilledTonalIconButton(
+                onClick = onComplete,
+                enabled = participant != null,
+                modifier = Modifier.size(48.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_check),
+                    contentDescription = stringResource(R.string.chore_complete),
+                )
             }
         }
     }

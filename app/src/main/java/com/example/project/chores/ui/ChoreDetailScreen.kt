@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
 import com.example.project.chores.ChoreIcon
+import com.example.project.people.ui.PersonAvatar
 
 @Composable
 fun ChoreDetailScreen(
@@ -72,29 +73,38 @@ fun ChoreDetailScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             ),
         ) {
-            Column(
+            Row(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = if (participant == null) {
-                        stringResource(R.string.chore_add_people_first)
-                    } else {
-                        stringResource(R.string.chore_current_assignee, participant)
-                    },
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                if (participant != null) {
-                    Text(
-                        text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
-                        style = MaterialTheme.typography.bodyLarge,
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    ChoreAssigneeLabel(
+                        participant = participant,
+                        style = MaterialTheme.typography.titleLarge,
                     )
+                    if (participant != null) {
+                        Text(
+                            text = stringResource(
+                                R.string.chore_turn_position,
+                                chore.turnNumber,
+                                chore.participants.size,
+                            ),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                    chore.lastCompletedBy?.let { name ->
+                        Text(
+                            text = stringResource(R.string.chore_last_completed_by, name),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
-                chore.lastCompletedBy?.let { name ->
-                    Text(
-                        text = stringResource(R.string.chore_last_completed_by, name),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                if (participant != null) {
+                    PersonAvatar(participant)
                 }
             }
         }

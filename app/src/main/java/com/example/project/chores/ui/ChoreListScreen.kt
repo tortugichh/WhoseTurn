@@ -82,6 +82,7 @@ fun ChoreListScreen(
                 chore = chore,
                 onClick = { onOpenChore(chore.id) },
                 onComplete = { onComplete(chore.id) },
+                modifier = Modifier.animateItem(),
             )
         }
 

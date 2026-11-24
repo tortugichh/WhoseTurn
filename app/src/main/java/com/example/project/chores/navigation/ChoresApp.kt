@@ -21,6 +21,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,6 +43,7 @@ import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 import com.example.project.chores.ui.ChoreNotFoundScreen
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,14 +56,19 @@ fun ChoresApp(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val resetMessage = stringResource(R.string.chores_reset_done)
-    val writeError = stringResource(R.string.chores_write_error)
+    val resources = LocalResources.current
+    val hapticFeedback = LocalHapticFeedback.current
 
-    LaunchedEffect(viewModel, navController, resetMessage, writeError) {
+    LaunchedEffect(viewModel, navController, resources, hapticFeedback) {
+        var snackbarJob: Job? = null
         viewModel.events.collect { event ->
-            when (event) {
-                ChoresEvent.TurnsReset -> launch { snackbarHostState.showSnackbar(resetMessage) }
-                ChoresEvent.WriteFailed -> launch { snackbarHostState.showSnackbar(writeError) }
+            val message = when (event) {
+                ChoresEvent.TurnsReset -> resources.getString(R.string.chores_reset_done)
+                ChoresEvent.WriteFailed -> resources.getString(R.string.chores_write_error)
+                is ChoresEvent.Completed -> {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                    resources.getString(R.string.chore_complete_feedback, event.nextPerson)
+                }
                 is ChoresEvent.Deleted -> {
                     val currentEntry = navController.currentBackStackEntry
                     if (currentEntry?.destination?.route == ChoreRoutes.DETAIL &&
@@ -67,7 +76,12 @@ fun ChoresApp(
                     ) {
                         navController.popBackStack(ChoreRoutes.LIST, inclusive = false)
                     }
+                    null
                 }
+            }
+            if (message != null) {
+                snackbarJob?.cancel()
+                snackbarJob = launch { snackbarHostState.showSnackbar(message) }
             }
         }
     }

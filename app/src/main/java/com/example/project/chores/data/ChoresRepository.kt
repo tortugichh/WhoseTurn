@@ -52,13 +52,13 @@ class ChoresRepository(private val database: AppDatabase) {
         choreDao.delete(id)
     }
 
-    suspend fun complete(id: String) {
+    suspend fun complete(id: String): String? =
         database.withTransaction {
-            val chore = choreDao.find(id) ?: return@withTransaction
+            val chore = choreDao.find(id) ?: return@withTransaction null
             val people = personDao.getAll()
             val current = people.find { it.id == chore.currentPersonId }
-                ?: return@withTransaction
-            val next = people.nextAfter(current.id) ?: return@withTransaction
+                ?: return@withTransaction null
+            val next = people.nextAfter(current.id) ?: return@withTransaction null
 
             choreDao.update(
                 chore.copy(
@@ -66,8 +66,8 @@ class ChoresRepository(private val database: AppDatabase) {
                     lastCompletedBy = current.name,
                 ),
             )
+            next.name
         }
-    }
 
     suspend fun resetTurns() {
         choreDao.resetTurns()

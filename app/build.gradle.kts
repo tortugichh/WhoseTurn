@@ -58,5 +58,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     ksp(libs.androidx.room.compiler)
 }
