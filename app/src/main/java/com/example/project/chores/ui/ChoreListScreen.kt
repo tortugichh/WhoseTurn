@@ -56,7 +56,9 @@ fun ChoreListScreen(
                         style = MaterialTheme.typography.headlineMedium,
                     )
                     Text(
-                        text = stringResource(R.string.chore_list_subtitle),
+                        text = stringResource(
+                            if (chores.isEmpty()) R.string.chore_list_empty else R.string.chore_list_subtitle,
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -80,18 +82,22 @@ fun ChoreListScreen(
             )
         }
 
-        item {
-            ResetChoresButton(
-                enabled = chores.any { it.lastCompletedBy != null },
-                onReset = onReset,
-            )
+        if (chores.isNotEmpty()) {
+            item {
+                ResetChoresButton(
+                    enabled = chores.any { it.lastCompletedBy != null },
+                    onReset = onReset,
+                )
+            }
         }
     }
 
     if (showAddDialog) {
-        AddChoreDialog(
+        ChoreTitleDialog(
+            titleResource = R.string.chore_add_title,
+            confirmResource = R.string.chore_add_confirm,
             onDismiss = { showAddDialog = false },
-            onAdd = { title ->
+            onConfirm = { title ->
                 showAddDialog = false
                 onAdd(title)
             },

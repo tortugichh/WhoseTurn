@@ -1,5 +1,6 @@
 package com.example.project.chores.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,22 +19,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import com.example.project.R
 
 @Composable
-internal fun AddChoreDialog(
+internal fun ChoreTitleDialog(
+    @StringRes titleResource: Int,
+    @StringRes confirmResource: Int,
     onDismiss: () -> Unit,
-    onAdd: (String) -> Unit,
+    onConfirm: (String) -> Unit,
+    initialTitle: String = "",
 ) {
-    var title by rememberSaveable { mutableStateOf("") }
+    var title by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(initialTitle, selection = TextRange(initialTitle.length)))
+    }
     val focusRequester = remember { FocusRequester() }
-    val trimmedTitle = title.trim()
-    val submit = { if (trimmedTitle.isNotEmpty()) onAdd(trimmedTitle) }
+    val trimmedTitle = title.text.trim()
+    val submit = { if (trimmedTitle.isNotEmpty()) onConfirm(trimmedTitle) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.chore_add_title)) },
+        title = { Text(stringResource(titleResource)) },
         text = {
             OutlinedTextField(
                 value = title,
@@ -50,7 +58,7 @@ internal fun AddChoreDialog(
         },
         confirmButton = {
             TextButton(onClick = submit, enabled = trimmedTitle.isNotEmpty()) {
-                Text(stringResource(R.string.chore_add_confirm))
+                Text(stringResource(confirmResource))
             }
         },
         dismissButton = {

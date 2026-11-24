@@ -24,7 +24,11 @@ sealed interface ChoresUiState {
     data object Error : ChoresUiState
 }
 
-internal enum class ChoresEvent { TurnsReset, WriteFailed }
+internal sealed interface ChoresEvent {
+    data object TurnsReset : ChoresEvent
+    data object WriteFailed : ChoresEvent
+    data class Deleted(val choreId: String) : ChoresEvent
+}
 
 class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<ChoresUiState>(ChoresUiState.Loading)
@@ -58,6 +62,15 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
 
     fun add(title: String) = write {
         repository.add(title)
+    }
+
+    fun rename(id: String, title: String) = write {
+        repository.rename(id, title)
+    }
+
+    fun delete(id: String) = write {
+        repository.delete(id)
+        eventChannel.send(ChoresEvent.Deleted(id))
     }
 
     fun resetChores() = write {

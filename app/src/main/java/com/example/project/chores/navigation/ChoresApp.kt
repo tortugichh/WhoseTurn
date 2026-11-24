@@ -40,6 +40,7 @@ import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 import com.example.project.chores.ui.ChoreNotFoundScreen
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,13 +55,20 @@ fun ChoresApp(
     val resetMessage = stringResource(R.string.chores_reset_done)
     val writeError = stringResource(R.string.chores_write_error)
 
-    LaunchedEffect(viewModel, resetMessage, writeError) {
+    LaunchedEffect(viewModel, navController, resetMessage, writeError) {
         viewModel.events.collect { event ->
-            val message = when (event) {
-                ChoresEvent.TurnsReset -> resetMessage
-                ChoresEvent.WriteFailed -> writeError
+            when (event) {
+                ChoresEvent.TurnsReset -> launch { snackbarHostState.showSnackbar(resetMessage) }
+                ChoresEvent.WriteFailed -> launch { snackbarHostState.showSnackbar(writeError) }
+                is ChoresEvent.Deleted -> {
+                    val currentEntry = navController.currentBackStackEntry
+                    if (currentEntry?.destination?.route == ChoreRoutes.DETAIL &&
+                        currentEntry.arguments?.getString(ChoreRoutes.TASK_ID) == event.choreId
+                    ) {
+                        navController.popBackStack(ChoreRoutes.LIST, inclusive = false)
+                    }
+                }
             }
-            snackbarHostState.showSnackbar(message)
         }
     }
 
@@ -114,6 +122,8 @@ fun ChoresApp(
                         ChoreDetailScreen(
                             chore = chore,
                             onComplete = { viewModel.complete(chore.id) },
+                            onRename = { title -> viewModel.rename(chore.id, title) },
+                            onDelete = { viewModel.delete(chore.id) },
                         )
                     } else {
                         ChoreNotFoundScreen(

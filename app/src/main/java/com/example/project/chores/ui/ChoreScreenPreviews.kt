@@ -73,7 +73,12 @@ private fun ChoreCardCompletedPreview() {
 @Composable
 private fun ChoreDetailScreenInitialPreview() {
     PreviewSurface {
-        ChoreDetailScreen(chore = initialChores.first(), onComplete = {})
+        ChoreDetailScreen(
+            chore = initialChores.first(),
+            onComplete = {},
+            onRename = {},
+            onDelete = {},
+        )
     }
 }
 
@@ -82,6 +87,11 @@ private fun ChoreDetailScreenInitialPreview() {
 @Composable
 private fun ChoreDetailScreenCompletedPreview() {
     PreviewSurface {
-        ChoreDetailScreen(chore = choresAfterTrash.first(), onComplete = {})
+        ChoreDetailScreen(
+            chore = choresAfterTrash.first(),
+            onComplete = {},
+            onRename = {},
+            onDelete = {},
+        )
     }
 }
