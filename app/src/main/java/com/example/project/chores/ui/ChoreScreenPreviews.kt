@@ -28,7 +28,13 @@ private fun PreviewSurface(content: @Composable () -> Unit) {
 @Composable
 private fun ChoreListScreenInitialPreview() {
     PreviewSurface {
-        ChoreListScreen(chores = initialChores, onOpenChore = {}, onReset = {}, onAdd = {})
+        ChoreListScreen(
+            chores = initialChores,
+            onOpenChore = {},
+            onReset = {},
+            onAdd = {},
+            onComplete = {},
+        )
     }
 }
 
@@ -41,7 +47,13 @@ private fun ChoreListScreenInitialPreview() {
 @Composable
 private fun ChoreListScreenCompletedPreview() {
     PreviewSurface {
-        ChoreListScreen(chores = choresAfterTrash, onOpenChore = {}, onReset = {}, onAdd = {})
+        ChoreListScreen(
+            chores = choresAfterTrash,
+            onOpenChore = {},
+            onReset = {},
+            onAdd = {},
+            onComplete = {},
+        )
     }
 }
 
@@ -52,6 +64,7 @@ private fun ChoreCardInitialPreview() {
         ChoreCard(
             chore = initialChores.first(),
             onClick = {},
+            onComplete = {},
             modifier = Modifier.padding(16.dp),
         )
     }
@@ -64,6 +77,7 @@ private fun ChoreCardCompletedPreview() {
         ChoreCard(
             chore = choresAfterTrash.first(),
             onClick = {},
+            onComplete = {},
             modifier = Modifier.padding(16.dp),
         )
     }

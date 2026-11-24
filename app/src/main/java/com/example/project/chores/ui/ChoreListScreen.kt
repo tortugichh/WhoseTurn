@@ -32,6 +32,7 @@ fun ChoreListScreen(
     onOpenChore: (String) -> Unit,
     onReset: () -> Unit,
     onAdd: (String) -> Unit,
+    onComplete: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
@@ -79,6 +80,7 @@ fun ChoreListScreen(
             ChoreCard(
                 chore = chore,
                 onClick = { onOpenChore(chore.id) },
+                onComplete = { onComplete(chore.id) },
             )
         }
 
