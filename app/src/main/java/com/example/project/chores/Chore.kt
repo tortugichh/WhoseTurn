@@ -6,6 +6,7 @@ data class Chore(
     val participants: List<String>,
     val currentIndex: Int = 0,
     val lastCompletedBy: String? = null,
+    val icon: ChoreIcon = ChoreIcon.Home,
 ) {
     val currentParticipant: String?
         get() = participants.getOrNull(currentIndex)

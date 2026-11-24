@@ -60,12 +60,12 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
         repository.complete(taskId)
     }
 
-    fun add(title: String) = write {
-        repository.add(title)
+    fun add(title: String, icon: ChoreIcon) = write {
+        repository.add(title, icon)
     }
 
-    fun rename(id: String, title: String) = write {
-        repository.rename(id, title)
+    fun rename(id: String, title: String, icon: ChoreIcon) = write {
+        repository.rename(id, title, icon)
     }
 
     fun delete(id: String) = write {

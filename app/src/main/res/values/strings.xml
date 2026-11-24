@@ -6,6 +6,13 @@
     <string name="chore_add_action">Добавить дело</string>
     <string name="chore_add_title">Новое дело</string>
     <string name="chore_title_label">Название</string>
+    <string name="chore_icon_label">Иконка</string>
+    <string name="chore_icon_trash">Мусор</string>
+    <string name="chore_icon_dishes">Посуда</string>
+    <string name="chore_icon_plant">Растения</string>
+    <string name="chore_icon_broom">Уборка</string>
+    <string name="chore_icon_laundry">Стирка</string>
+    <string name="chore_icon_home">Дом</string>
     <string name="chore_add_confirm">Добавить</string>
     <string name="chore_dialog_cancel">Отмена</string>
     <string name="chore_detail_title">Детали дела</string>

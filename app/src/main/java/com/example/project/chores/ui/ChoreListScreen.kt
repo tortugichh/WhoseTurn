@@ -25,13 +25,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
+import com.example.project.chores.ChoreIcon
 
 @Composable
 fun ChoreListScreen(
     chores: List<Chore>,
     onOpenChore: (String) -> Unit,
     onReset: () -> Unit,
-    onAdd: (String) -> Unit,
+    onAdd: (String, ChoreIcon) -> Unit,
     onComplete: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,9 +100,9 @@ fun ChoreListScreen(
             titleResource = R.string.chore_add_title,
             confirmResource = R.string.chore_add_confirm,
             onDismiss = { showAddDialog = false },
-            onConfirm = { title ->
+            onConfirm = { title, icon ->
                 showAddDialog = false
-                onAdd(title)
+                onAdd(title, icon)
             },
         )
     }

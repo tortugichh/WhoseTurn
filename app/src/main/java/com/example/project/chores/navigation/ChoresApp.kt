@@ -123,7 +123,7 @@ fun ChoresApp(
                         ChoreDetailScreen(
                             chore = chore,
                             onComplete = { viewModel.complete(chore.id) },
-                            onRename = { title -> viewModel.rename(chore.id, title) },
+                            onRename = { title, icon -> viewModel.rename(chore.id, title, icon) },
                             onDelete = { viewModel.delete(chore.id) },
                         )
                     } else {

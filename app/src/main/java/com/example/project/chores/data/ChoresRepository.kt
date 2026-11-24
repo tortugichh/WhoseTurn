@@ -2,6 +2,7 @@ package com.example.project.chores.data
 
 import androidx.room.withTransaction
 import com.example.project.chores.Chore
+import com.example.project.chores.ChoreIcon
 import com.example.project.data.AppDatabase
 import com.example.project.data.ChoreEntity
 import com.example.project.data.PersonEntity
@@ -19,7 +20,7 @@ class ChoresRepository(private val database: AppDatabase) {
             chores.map { it.toChore(people) }
         }
 
-    suspend fun add(title: String) {
+    suspend fun add(title: String, icon: ChoreIcon = ChoreIcon.Home) {
         val trimmedTitle = title.trim()
         require(trimmedTitle.isNotEmpty())
 
@@ -29,6 +30,7 @@ class ChoresRepository(private val database: AppDatabase) {
                 ChoreEntity(
                     id = UUID.randomUUID().toString(),
                     title = trimmedTitle,
+                    icon = icon.key,
                     currentPersonId = startId,
                     startPersonId = startId,
                 ),
@@ -36,13 +38,13 @@ class ChoresRepository(private val database: AppDatabase) {
         }
     }
 
-    suspend fun rename(id: String, title: String) {
+    suspend fun rename(id: String, title: String, icon: ChoreIcon? = null) {
         val trimmedTitle = title.trim()
         require(trimmedTitle.isNotEmpty())
 
         database.withTransaction {
             val chore = choreDao.find(id) ?: return@withTransaction
-            choreDao.update(chore.copy(title = trimmedTitle))
+            choreDao.update(chore.copy(title = trimmedTitle, icon = icon?.key ?: chore.icon))
         }
     }
 
@@ -82,5 +84,6 @@ private fun ChoreEntity.toChore(people: List<PersonEntity>): Chore {
         participants = rotation.map { it.name },
         currentIndex = rotation.indexOfFirst { it.id == currentPersonId }.coerceAtLeast(0),
         lastCompletedBy = lastCompletedBy,
+        icon = ChoreIcon.fromKey(icon),
     )
 }

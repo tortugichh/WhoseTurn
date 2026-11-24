@@ -32,7 +32,7 @@ private fun ChoreListScreenInitialPreview() {
             chores = initialChores,
             onOpenChore = {},
             onReset = {},
-            onAdd = {},
+            onAdd = { _, _ -> },
             onComplete = {},
         )
     }
@@ -51,7 +51,7 @@ private fun ChoreListScreenCompletedPreview() {
             chores = choresAfterTrash,
             onOpenChore = {},
             onReset = {},
-            onAdd = {},
+            onAdd = { _, _ -> },
             onComplete = {},
         )
     }
@@ -90,7 +90,7 @@ private fun ChoreDetailScreenInitialPreview() {
         ChoreDetailScreen(
             chore = initialChores.first(),
             onComplete = {},
-            onRename = {},
+            onRename = { _, _ -> },
             onDelete = {},
         )
     }
@@ -104,7 +104,7 @@ private fun ChoreDetailScreenCompletedPreview() {
         ChoreDetailScreen(
             chore = choresAfterTrash.first(),
             onComplete = {},
-            onRename = {},
+            onRename = { _, _ -> },
             onDelete = {},
         )
     }

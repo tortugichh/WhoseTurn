@@ -35,14 +35,12 @@ abstract class AppDatabase : RoomDatabase() {
 
                 chores.forEach { chore ->
                     val startId = personIds.getValue(chore.participants.first())
-                    val icon = if (chore.id == "plants") "plant" else chore.id
-
                     db.execSQL(
                         """
                         INSERT INTO chores (id, title, icon, currentPersonId, startPersonId)
                         VALUES (?, ?, ?, ?, ?)
                         """.trimIndent(),
-                        arrayOf<Any>(chore.id, chore.title, icon, startId, startId),
+                        arrayOf<Any>(chore.id, chore.title, chore.icon.key, startId, startId),
                     )
                 }
             }

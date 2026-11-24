@@ -31,12 +31,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
+import com.example.project.chores.ChoreIcon
 
 @Composable
 fun ChoreDetailScreen(
     chore: Chore,
     onComplete: () -> Unit,
-    onRename: (String) -> Unit,
+    onRename: (String, ChoreIcon) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -50,10 +51,17 @@ fun ChoreDetailScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = chore.title,
-            style = MaterialTheme.typography.headlineMedium,
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ChoreIconBadge(chore.icon)
+            Text(
+                text = chore.title,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.headlineMedium,
+            )
+        }
 
         Card(
             modifier = Modifier
@@ -121,10 +129,11 @@ fun ChoreDetailScreen(
             titleResource = R.string.chore_rename_title,
             confirmResource = R.string.chore_rename_confirm,
             initialTitle = chore.title,
+            initialIcon = chore.icon,
             onDismiss = { dialog = null },
-            onConfirm = { title ->
+            onConfirm = { title, icon ->
                 dialog = null
-                onRename(title)
+                onRename(title, icon)
             },
         )
         ChoreDialog.Delete -> AlertDialog(
