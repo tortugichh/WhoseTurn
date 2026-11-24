@@ -31,7 +31,6 @@ private fun ChoreListScreenInitialPreview() {
         ChoreListScreen(
             chores = initialChores,
             onOpenChore = {},
-            onReset = {},
             onAdd = { _, _ -> },
             onComplete = {},
         )
@@ -50,7 +49,6 @@ private fun ChoreListScreenCompletedPreview() {
         ChoreListScreen(
             chores = choresAfterTrash,
             onOpenChore = {},
-            onReset = {},
             onAdd = { _, _ -> },
             onComplete = {},
         )

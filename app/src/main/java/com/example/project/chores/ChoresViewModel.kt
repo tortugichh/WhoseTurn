@@ -25,7 +25,6 @@ sealed interface ChoresUiState {
 }
 
 internal sealed interface ChoresEvent {
-    data object TurnsReset : ChoresEvent
     data object WriteFailed : ChoresEvent
     data class Completed(val nextPerson: String) : ChoresEvent
     data class Deleted(val choreId: String) : ChoresEvent
@@ -73,11 +72,6 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
     fun delete(id: String) = write {
         repository.delete(id)
         eventChannel.send(ChoresEvent.Deleted(id))
-    }
-
-    fun resetChores() = write {
-        repository.resetTurns()
-        eventChannel.send(ChoresEvent.TurnsReset)
     }
 
     private fun write(action: suspend () -> Unit) {

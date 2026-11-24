@@ -63,7 +63,6 @@ fun ChoresApp(
         var snackbarJob: Job? = null
         viewModel.events.collect { event ->
             val message = when (event) {
-                ChoresEvent.TurnsReset -> resources.getString(R.string.chores_reset_done)
                 ChoresEvent.WriteFailed -> resources.getString(R.string.chores_write_error)
                 is ChoresEvent.Completed -> {
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
@@ -119,7 +118,6 @@ fun ChoresApp(
                                 launchSingleTop = true
                             }
                         },
-                        onReset = viewModel::resetChores,
                         onAdd = viewModel::add,
                         onComplete = viewModel::complete,
                     )

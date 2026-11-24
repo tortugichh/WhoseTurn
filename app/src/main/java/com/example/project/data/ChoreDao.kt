@@ -23,9 +23,6 @@ interface ChoreDao {
     @Query("DELETE FROM chores WHERE id = :id")
     suspend fun delete(id: String)
 
-    @Query("UPDATE chores SET currentPersonId = startPersonId, lastCompletedBy = NULL")
-    suspend fun resetTurns()
-
     @Query(
         """
         UPDATE chores

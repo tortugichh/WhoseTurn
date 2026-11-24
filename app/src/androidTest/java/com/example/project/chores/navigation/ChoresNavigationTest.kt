@@ -3,7 +3,6 @@ package com.example.project.chores.navigation
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -114,29 +113,6 @@ class ChoresNavigationTest {
         compose.runOnIdle {
             assertEquals(taskId, navController.currentBackStackEntry?.arguments?.getString(ChoreRoutes.TASK_ID))
         }
-    }
-
-    @Test
-    fun resetChangesTurnsAndShowsFeedbackOnlyAfterConfirmation() {
-        compose.onNodeWithText("Вынести мусор").performClick()
-        completeChore()
-        compose.onNodeWithContentDescription("Назад").performClick()
-
-        compose.onNodeWithText("Сбросить очереди").performScrollTo().performClick()
-        compose.onNodeWithText("Отмена").performClick()
-        compose.onNodeWithText("Сбросить все очереди?").assertDoesNotExist()
-        compose.onNodeWithText("Очереди сброшены").assertDoesNotExist()
-        assertCard("Вынести мусор", "Данияр")
-
-        compose.onNodeWithText("Сбросить очереди").performScrollTo().performClick()
-        compose.onNodeWithText("Сбросить").performClick()
-
-        compose.onNodeWithText("Очереди сброшены").assertIsDisplayed()
-        compose.onNodeWithText("Сбросить все очереди?").assertDoesNotExist()
-        compose.onNodeWithText("Сбросить очереди").assertIsNotEnabled()
-        assertCard("Вынести мусор", "Асхат")
-        assertCard("Помыть посуду", "Данияр")
-        assertCard("Полить растения", "Нурмек")
     }
 
     private fun completeChore() {

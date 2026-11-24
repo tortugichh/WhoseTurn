@@ -35,12 +35,6 @@
     <string name="chore_last_completed_by">Последний исполнитель: %1$s</string>
     <string name="chore_complete">Выполнено</string>
     <string name="chore_complete_feedback">Готово. Теперь очередь: %1$s</string>
-    <string name="chores_reset_action">Сбросить очереди</string>
-    <string name="chores_reset_done">Очереди сброшены</string>
-    <string name="chores_reset_title">Сбросить все очереди?</string>
-    <string name="chores_reset_description">В каждом деле очередь вернётся к первому участнику. Отметки о последнем выполнении будут удалены.</string>
-    <string name="chores_reset_confirm">Сбросить</string>
-    <string name="chores_reset_cancel">Отмена</string>
     <string name="chores_load_error">Не удалось загрузить дела</string>
     <string name="chores_write_error">Не удалось сохранить изменения</string>
     <string name="chores_retry">Повторить</string>
@@ -49,8 +43,6 @@
     <string name="settings_theme_system">Как в системе</string>
     <string name="settings_theme_light">Светлая</string>
     <string name="settings_theme_dark">Тёмная</string>
-    <string name="settings_turns_title">Очереди</string>
-    <string name="settings_turns_description">Вернуть очередь в каждом деле к первому участнику.</string>
     <string name="people_title">Люди</string>
     <string name="people_subtitle">Все дела идут по очереди в этом порядке</string>
     <string name="people_empty">Пока никого нет. Добавьте людей, чтобы делить дела.</string>

@@ -68,10 +68,6 @@ class ChoresRepository(private val database: AppDatabase) {
             )
             next.name
         }
-
-    suspend fun resetTurns() {
-        choreDao.resetTurns()
-    }
 }
 
 private fun ChoreEntity.toChore(people: List<PersonEntity>): Chore {

@@ -31,7 +31,6 @@ import com.example.project.chores.ChoreIcon
 fun ChoreListScreen(
     chores: List<Chore>,
     onOpenChore: (String) -> Unit,
-    onReset: () -> Unit,
     onAdd: (String, ChoreIcon) -> Unit,
     onComplete: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -84,15 +83,6 @@ fun ChoreListScreen(
                 onComplete = { onComplete(chore.id) },
                 modifier = Modifier.animateItem(),
             )
-        }
-
-        if (chores.isNotEmpty()) {
-            item {
-                ResetChoresButton(
-                    enabled = chores.any { it.lastCompletedBy != null },
-                    onReset = onReset,
-                )
-            }
         }
     }
 

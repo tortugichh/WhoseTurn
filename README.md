@@ -13,4 +13,3 @@ An Android app for sharing household chores. Each chore has its own participant 
 - See who is responsible for each chore and their position in the rotation.
 - Mark a chore as done to pass the turn to the next participant.
 - See who completed each chore most recently.
-- Reset all rotations to their starting positions after confirming the action.

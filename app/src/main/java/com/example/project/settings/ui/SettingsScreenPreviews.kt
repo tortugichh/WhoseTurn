@@ -15,8 +15,6 @@ private fun SettingsScreenPreview() {
             SettingsScreen(
                 theme = ThemeMode.System,
                 onThemeChange = {},
-                canResetTurns = true,
-                onResetTurns = {},
             )
         }
     }
@@ -30,8 +28,6 @@ private fun DarkSettingsScreenPreview() {
             SettingsScreen(
                 theme = ThemeMode.Dark,
                 onThemeChange = {},
-                canResetTurns = false,
-                onResetTurns = {},
             )
         }
     }

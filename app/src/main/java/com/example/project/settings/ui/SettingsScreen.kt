@@ -26,14 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project.R
-import com.example.project.chores.ui.ResetChoresButton
 import com.example.project.settings.SettingsViewModel
 import com.example.project.settings.ThemeMode
 
 @Composable
 fun SettingsRoute(
-    canResetTurns: Boolean,
-    onResetTurns: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
 ) {
@@ -43,8 +40,6 @@ fun SettingsRoute(
         SettingsScreen(
             theme = savedTheme,
             onThemeChange = viewModel::setTheme,
-            canResetTurns = canResetTurns,
-            onResetTurns = onResetTurns,
             modifier = modifier,
         )
     }
@@ -54,8 +49,6 @@ fun SettingsRoute(
 fun SettingsScreen(
     theme: ThemeMode,
     onThemeChange: (ThemeMode) -> Unit,
-    canResetTurns: Boolean,
-    onResetTurns: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -80,15 +73,6 @@ fun SettingsScreen(
                     )
                 }
             }
-        }
-
-        SettingsSection(title = R.string.settings_turns_title) {
-            Text(
-                text = stringResource(R.string.settings_turns_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            ResetChoresButton(enabled = canResetTurns, onReset = onResetTurns)
         }
     }
 }
