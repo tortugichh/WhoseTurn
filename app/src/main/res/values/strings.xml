@@ -44,4 +44,11 @@
     <string name="chores_load_error">Не удалось загрузить дела</string>
     <string name="chores_write_error">Не удалось сохранить изменения</string>
     <string name="chores_retry">Повторить</string>
+    <string name="settings_title">Настройки</string>
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_theme_system">Как в системе</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_turns_title">Очереди</string>
+    <string name="settings_turns_description">Вернуть очередь в каждом деле к первому участнику.</string>
 </resources>
