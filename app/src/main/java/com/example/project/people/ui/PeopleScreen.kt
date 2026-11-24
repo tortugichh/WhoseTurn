@@ -14,33 +14,54 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.project.R
+import com.example.project.people.PeopleEvent
 import com.example.project.people.PeopleUiState
 import com.example.project.people.PeopleViewModel
 import com.example.project.people.Person
 import com.example.project.ui.components.EmptyState
+import kotlinx.coroutines.launch
 
 @Composable
 fun PeopleRoute(
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     viewModel: PeopleViewModel = viewModel(factory = PeopleViewModel.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val writeError = stringResource(R.string.chores_write_error)
+
+    LaunchedEffect(viewModel, snackbarHostState) {
+        viewModel.events.collect { event ->
+            when (event) {
+                PeopleEvent.WriteFailed -> launch { snackbarHostState.showSnackbar(writeError) }
+            }
+        }
+    }
 
     when (val current = state) {
         is PeopleUiState.Ready -> PeopleScreen(
             people = current.people,
+            onAdd = viewModel::add,
             modifier = modifier,
         )
         PeopleUiState.Loading -> Box(
@@ -69,15 +90,19 @@ fun PeopleRoute(
 @Composable
 fun PeopleScreen(
     people: List<Person>,
+    onAdd: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    val takenNames = people.map { it.name }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
-            PeopleHeader(isEmpty = people.isEmpty())
+            PeopleHeader(isEmpty = people.isEmpty(), onAddClick = { showAddDialog = true })
         }
 
         if (people.isEmpty()) {
@@ -85,6 +110,8 @@ fun PeopleScreen(
                 EmptyState(
                     icon = R.drawable.ic_people,
                     text = stringResource(R.string.people_empty),
+                    actionLabel = stringResource(R.string.people_add_action),
+                    onAction = { showAddDialog = true },
                 )
             }
         }
@@ -97,23 +124,48 @@ fun PeopleScreen(
             )
         }
     }
+
+    if (showAddDialog) {
+        PersonNameDialog(
+            titleResource = R.string.people_add_title,
+            confirmResource = R.string.chore_add_confirm,
+            takenNames = takenNames,
+            onDismiss = { showAddDialog = false },
+            onConfirm = { name ->
+                showAddDialog = false
+                onAdd(name)
+            },
+        )
+    }
 }
 
 @Composable
-private fun PeopleHeader(isEmpty: Boolean) {
-    Column(
-        modifier = Modifier.padding(bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+private fun PeopleHeader(isEmpty: Boolean, onAddClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = stringResource(R.string.people_title),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        if (!isEmpty) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
-                text = stringResource(R.string.people_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(R.string.people_title),
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            if (!isEmpty) {
+                Text(
+                    text = stringResource(R.string.people_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        FilledTonalIconButton(onClick = onAddClick, modifier = Modifier.size(48.dp)) {
+            Icon(
+                painter = painterResource(R.drawable.ic_add),
+                contentDescription = stringResource(R.string.people_add_action),
             )
         }
     }

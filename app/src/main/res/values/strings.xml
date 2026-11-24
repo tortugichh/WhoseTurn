@@ -55,4 +55,8 @@
     <string name="people_subtitle">Все дела идут по очереди в этом порядке</string>
     <string name="people_empty">Пока никого нет. Добавьте людей, чтобы делить дела.</string>
     <string name="people_load_error">Не удалось загрузить список людей</string>
+    <string name="people_add_action">Добавить человека</string>
+    <string name="people_add_title">Новый человек</string>
+    <string name="people_name_label">Имя</string>
+    <string name="people_name_taken">Такое имя уже есть</string>
 </resources>
