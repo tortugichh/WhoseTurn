@@ -98,6 +98,7 @@ fun ChoresApp(
                             }
                         },
                         onReset = viewModel::resetChores,
+                        onAdd = viewModel::add,
                     )
                 }
             }

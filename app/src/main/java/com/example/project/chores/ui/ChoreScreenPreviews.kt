@@ -28,7 +28,7 @@ private fun PreviewSurface(content: @Composable () -> Unit) {
 @Composable
 private fun ChoreListScreenInitialPreview() {
     PreviewSurface {
-        ChoreListScreen(chores = initialChores, onOpenChore = {}, onReset = {})
+        ChoreListScreen(chores = initialChores, onOpenChore = {}, onReset = {}, onAdd = {})
     }
 }
 
@@ -41,7 +41,7 @@ private fun ChoreListScreenInitialPreview() {
 @Composable
 private fun ChoreListScreenCompletedPreview() {
     PreviewSurface {
-        ChoreListScreen(chores = choresAfterTrash, onOpenChore = {}, onReset = {})
+        ChoreListScreen(chores = choresAfterTrash, onOpenChore = {}, onReset = {}, onAdd = {})
     }
 }
 

@@ -2,6 +2,11 @@
     <string name="app_name">Чья очередь?</string>
     <string name="chores_home_title">@string/app_name</string>
     <string name="chore_list_subtitle">Выберите дело, чтобы посмотреть очередь</string>
+    <string name="chore_add_action">Добавить дело</string>
+    <string name="chore_add_title">Новое дело</string>
+    <string name="chore_title_label">Название</string>
+    <string name="chore_add_confirm">Добавить</string>
+    <string name="chore_dialog_cancel">Отмена</string>
     <string name="chore_detail_title">Детали дела</string>
     <string name="chore_navigate_back">Назад</string>
     <string name="chore_not_found">Дело не найдено</string>

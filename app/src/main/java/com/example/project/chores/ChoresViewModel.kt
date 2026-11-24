@@ -56,6 +56,10 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
         repository.complete(taskId)
     }
 
+    fun add(title: String) = write {
+        repository.add(title)
+    }
+
     fun resetChores() = write {
         repository.resetTurns()
         eventChannel.send(ChoresEvent.TurnsReset)
