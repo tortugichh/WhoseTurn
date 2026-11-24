@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -62,6 +63,7 @@ fun PeopleRoute(
         is PeopleUiState.Ready -> PeopleScreen(
             people = current.people,
             onAdd = viewModel::add,
+            onRename = viewModel::rename,
             modifier = modifier,
         )
         PeopleUiState.Loading -> Box(
@@ -91,9 +93,12 @@ fun PeopleRoute(
 fun PeopleScreen(
     people: List<Person>,
     onAdd: (String) -> Unit,
+    onRename: (Long, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    var renamingId by rememberSaveable { mutableStateOf<Long?>(null) }
+    val renamingPerson = people.find { it.id == renamingId }
     val takenNames = people.map { it.name }
 
     LazyColumn(
@@ -120,6 +125,7 @@ fun PeopleScreen(
             PersonRow(
                 position = index + 1,
                 person = person,
+                onRenameClick = { renamingId = person.id },
                 modifier = Modifier.animateItem(),
             )
         }
@@ -134,6 +140,20 @@ fun PeopleScreen(
             onConfirm = { name ->
                 showAddDialog = false
                 onAdd(name)
+            },
+        )
+    }
+
+    if (renamingPerson != null) {
+        PersonNameDialog(
+            titleResource = R.string.people_rename_title,
+            confirmResource = R.string.chore_rename_confirm,
+            takenNames = takenNames,
+            initialName = renamingPerson.name,
+            onDismiss = { renamingId = null },
+            onConfirm = { name ->
+                renamingId = null
+                onRename(renamingPerson.id, name)
             },
         )
     }
@@ -175,6 +195,7 @@ private fun PeopleHeader(isEmpty: Boolean, onAddClick: () -> Unit) {
 private fun PersonRow(
     position: Int,
     person: Person,
+    onRenameClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -200,6 +221,12 @@ private fun PersonRow(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
             )
+            IconButton(onClick = onRenameClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_edit),
+                    contentDescription = stringResource(R.string.people_rename_action, person.name),
+                )
+            }
         }
     }
 }

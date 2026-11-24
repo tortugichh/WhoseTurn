@@ -59,4 +59,6 @@
     <string name="people_add_title">Новый человек</string>
     <string name="people_name_label">Имя</string>
     <string name="people_name_taken">Такое имя уже есть</string>
+    <string name="people_rename_title">Изменить имя</string>
+    <string name="people_rename_action">Изменить имя: %1$s</string>
 </resources>

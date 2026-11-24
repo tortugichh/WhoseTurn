@@ -58,6 +58,10 @@ class PeopleViewModel(private val repository: PeopleRepository) : ViewModel() {
         repository.add(name)
     }
 
+    fun rename(id: Long, name: String) = write {
+        repository.rename(id, name)
+    }
+
     private fun write(action: suspend () -> Unit) {
         viewModelScope.launch {
             try {
