@@ -24,6 +24,8 @@ fun ChoreCard(
     onComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val participant = chore.currentParticipant
+
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -41,18 +43,26 @@ fun ChoreCard(
                     text = chore.title,
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Text(
-                    text = stringResource(R.string.chore_current_assignee, chore.currentParticipant),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                    text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (participant == null) {
+                    Text(
+                        text = stringResource(R.string.chore_add_people_first),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.chore_current_assignee, participant),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Text(
+                        text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
 
-            TextButton(onClick = onComplete) {
+            TextButton(onClick = onComplete, enabled = participant != null) {
                 Text(stringResource(R.string.chore_complete))
             }
         }

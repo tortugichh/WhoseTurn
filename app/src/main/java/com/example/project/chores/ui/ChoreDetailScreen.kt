@@ -41,6 +41,7 @@ fun ChoreDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     var dialog by rememberSaveable(chore.id) { mutableStateOf<ChoreDialog?>(null) }
+    val participant = chore.currentParticipant
 
     Column(
         modifier = modifier
@@ -68,13 +69,19 @@ fun ChoreDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.chore_current_assignee, chore.currentParticipant),
+                    text = if (participant == null) {
+                        stringResource(R.string.chore_add_people_first)
+                    } else {
+                        stringResource(R.string.chore_current_assignee, participant)
+                    },
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Text(
-                    text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                if (participant != null) {
+                    Text(
+                        text = stringResource(R.string.chore_turn_position, chore.turnNumber, chore.participants.size),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
                 chore.lastCompletedBy?.let { name ->
                     Text(
                         text = stringResource(R.string.chore_last_completed_by, name),
@@ -84,10 +91,13 @@ fun ChoreDetailScreen(
             }
         }
 
-        ParticipantRotation(chore = chore)
+        if (participant != null) {
+            ParticipantRotation(chore = chore)
+        }
 
         Button(
             onClick = onComplete,
+            enabled = participant != null,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.chore_complete))
@@ -151,7 +161,7 @@ private fun ParticipantRotation(
     chore: Chore,
     modifier: Modifier = Modifier,
 ) {
-    val nextIndex = (chore.currentIndex + 1) % chore.participants.size
+    val nextIndex = chore.nextIndex
 
     Column(
         modifier = modifier.fillMaxWidth(),

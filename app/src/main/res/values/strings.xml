@@ -23,6 +23,7 @@
     <string name="chore_participant_position">%1$d.</string>
     <string name="chore_current_assignee">Сейчас очередь: %1$s</string>
     <string name="chore_turn_position">Ход %1$d из %2$d</string>
+    <string name="chore_add_people_first">Сначала добавьте участников</string>
     <string name="chore_last_completed_by">Последний исполнитель: %1$s</string>
     <string name="chore_complete">Выполнено</string>
     <string name="chores_reset_action">Сбросить очереди</string>

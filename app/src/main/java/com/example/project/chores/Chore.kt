@@ -7,20 +7,24 @@ data class Chore(
     val currentIndex: Int = 0,
     val lastCompletedBy: String? = null,
 ) {
-    val currentParticipant: String
-        get() = participants[currentIndex]
+    val currentParticipant: String?
+        get() = participants.getOrNull(currentIndex)
 
     val turnNumber: Int
-        get() = currentIndex + 1
+        get() = if (currentIndex in participants.indices) currentIndex + 1 else 0
 
-    private val nextIndex: Int
-        get() = (currentIndex + 1) % participants.size
+    internal val nextIndex: Int?
+        get() = if (currentIndex in participants.indices) {
+            (currentIndex + 1) % participants.size
+        } else {
+            null
+        }
 
-    val nextParticipant: String
-        get() = participants[nextIndex]
+    val nextParticipant: String?
+        get() = nextIndex?.let { participants[it] }
 
-    fun advance(): Chore = copy(
-        currentIndex = nextIndex,
-        lastCompletedBy = currentParticipant,
-    )
+    fun advance(): Chore {
+        val next = nextIndex ?: return this
+        return copy(currentIndex = next, lastCompletedBy = currentParticipant)
+    }
 }
