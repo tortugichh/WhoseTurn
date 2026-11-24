@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
@@ -21,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,6 +66,7 @@ fun PeopleRoute(
             people = current.people,
             onAdd = viewModel::add,
             onRename = viewModel::rename,
+            onDelete = viewModel::delete,
             modifier = modifier,
         )
         PeopleUiState.Loading -> Box(
@@ -94,11 +97,14 @@ fun PeopleScreen(
     people: List<Person>,
     onAdd: (String) -> Unit,
     onRename: (Long, String) -> Unit,
+    onDelete: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
     var renamingId by rememberSaveable { mutableStateOf<Long?>(null) }
     val renamingPerson = people.find { it.id == renamingId }
+    var deletingId by rememberSaveable { mutableStateOf<Long?>(null) }
+    val deletingPerson = people.find { it.id == deletingId }
     val takenNames = people.map { it.name }
 
     LazyColumn(
@@ -126,6 +132,7 @@ fun PeopleScreen(
                 position = index + 1,
                 person = person,
                 onRenameClick = { renamingId = person.id },
+                onDeleteClick = { deletingId = person.id },
                 modifier = Modifier.animateItem(),
             )
         }
@@ -154,6 +161,29 @@ fun PeopleScreen(
             onConfirm = { name ->
                 renamingId = null
                 onRename(renamingPerson.id, name)
+            },
+        )
+    }
+
+    if (deletingPerson != null) {
+        AlertDialog(
+            onDismissRequest = { deletingId = null },
+            title = { Text(stringResource(R.string.people_delete_title, deletingPerson.name)) },
+            text = { Text(stringResource(R.string.people_delete_description)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        deletingId = null
+                        onDelete(deletingPerson.id)
+                    },
+                ) {
+                    Text(stringResource(R.string.chore_delete_action))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingId = null }) {
+                    Text(stringResource(R.string.chore_dialog_cancel))
+                }
             },
         )
     }
@@ -196,6 +226,7 @@ private fun PersonRow(
     position: Int,
     person: Person,
     onRenameClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -225,6 +256,12 @@ private fun PersonRow(
                 Icon(
                     painter = painterResource(R.drawable.ic_edit),
                     contentDescription = stringResource(R.string.people_rename_action, person.name),
+                )
+            }
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_trash),
+                    contentDescription = stringResource(R.string.people_delete_action, person.name),
                 )
             }
         }

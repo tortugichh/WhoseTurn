@@ -62,6 +62,10 @@ class PeopleViewModel(private val repository: PeopleRepository) : ViewModel() {
         repository.rename(id, name)
     }
 
+    fun delete(id: Long) = write {
+        repository.delete(id)
+    }
+
     private fun write(action: suspend () -> Unit) {
         viewModelScope.launch {
             try {

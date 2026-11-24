@@ -61,4 +61,7 @@
     <string name="people_name_taken">Такое имя уже есть</string>
     <string name="people_rename_title">Изменить имя</string>
     <string name="people_rename_action">Изменить имя: %1$s</string>
+    <string name="people_delete_action">Удалить: %1$s</string>
+    <string name="people_delete_title">Удалить «%1$s»?</string>
+    <string name="people_delete_description">Человек уйдёт из всех очередей. Если сейчас его очередь, она перейдёт следующему.</string>
 </resources>
