@@ -62,4 +62,6 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
 }
