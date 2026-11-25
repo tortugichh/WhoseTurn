@@ -1,5 +1,10 @@
 package com.example.project.chores.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -150,6 +155,10 @@ fun ChoresApp(
             navController = navController,
             startDestination = ChoreRoutes.LIST,
             modifier = Modifier.padding(innerPadding),
+            enterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(200)) { it / 12 } },
+            exitTransition = { fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { -it / 12 } },
+            popEnterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(200)) { -it / 12 } },
+            popExitTransition = { fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it / 12 } },
         ) {
             composable(ChoreRoutes.LIST) {
                 WithChores(state, viewModel::retry) { chores ->
