@@ -115,7 +115,9 @@ fun ChoresApp(
                 },
                 actions = {
                     if (!isDetail && currentRoute != ChoreRoutes.SETTINGS) {
-                        IconButton(onClick = { navController.navigate(ChoreRoutes.SETTINGS) }) {
+                        IconButton(onClick = {
+                            navController.navigate(ChoreRoutes.SETTINGS) { launchSingleTop = true }
+                        }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_settings),
                                 contentDescription = stringResource(R.string.navigation_settings),
@@ -135,7 +137,7 @@ fun ChoresApp(
                     ).forEach { (route, icon, label) ->
                         NavigationBarItem(
                             selected = currentRoute == route,
-                            onClick = { navController.navigate(route) },
+                            onClick = { navController.navigateToTab(route) },
                             icon = { Icon(painterResource(icon), contentDescription = null) },
                             label = { Text(stringResource(label)) },
                         )
@@ -195,6 +197,14 @@ fun ChoresApp(
                 }
             }
         }
+    }
+}
+
+private fun NavHostController.navigateToTab(route: String) {
+    navigate(route) {
+        popUpTo(ChoreRoutes.LIST) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
     }
 }
 
