@@ -9,4 +9,7 @@ data class DayForecast(
     val maxTemp: Int,
     val rainChance: Int,
     val weatherCode: Int,
+    val choreTip: ChoreTip?,
 )
+
+enum class ChoreTip { SkipWatering, ClearEntrance, DoLaundry }

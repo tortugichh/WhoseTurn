@@ -1,6 +1,7 @@
 package com.example.project.weather.data
 
 import com.example.project.weather.DayForecast
+import com.example.project.weather.ChoreTip
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
@@ -28,6 +29,7 @@ class WeatherRepository(private val api: WeatherApi) {
                 maxTemp = highs[index].toInt(),
                 rainChance = rain[index],
                 weatherCode = code,
+                choreTip = choreTip(code, rain[index], highs[index]),
             )
         }
     }
@@ -62,6 +64,13 @@ class WeatherRepository(private val api: WeatherApi) {
         in 71..77, 85, 86 -> "13d"
         in 95..99 -> "11d"
         else -> "03d"
+    }
+
+    private fun choreTip(code: Int, rainChance: Int, maxTemperature: Double): ChoreTip? = when {
+        rainChance >= 60 -> ChoreTip.SkipWatering
+        code in 71..77 || code == 85 || code == 86 -> ChoreTip.ClearEntrance
+        rainChance < 20 && maxTemperature >= 10 -> ChoreTip.DoLaundry
+        else -> null
     }
 
     companion object {

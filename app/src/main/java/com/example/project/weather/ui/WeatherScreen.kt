@@ -29,6 +29,7 @@ import coil3.compose.AsyncImage
 import com.example.project.R
 import com.example.project.ui.components.EmptyState
 import com.example.project.weather.DayForecast
+import com.example.project.weather.ChoreTip
 import com.example.project.weather.WeatherUiState
 import com.example.project.weather.WeatherViewModel
 
@@ -118,7 +119,16 @@ private fun WeatherDayCard(day: DayForecast) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                day.choreTip?.let { tip ->
+                    Text(stringResource(tip.label()), style = MaterialTheme.typography.bodySmall)
+                }
             }
         }
     }
+}
+
+private fun ChoreTip.label(): Int = when (this) {
+    ChoreTip.SkipWatering -> R.string.weather_tip_skip_watering
+    ChoreTip.ClearEntrance -> R.string.weather_tip_clear_entrance
+    ChoreTip.DoLaundry -> R.string.weather_tip_do_laundry
 }
