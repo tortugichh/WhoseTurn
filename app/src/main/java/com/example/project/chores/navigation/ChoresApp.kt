@@ -10,6 +10,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -43,6 +45,9 @@ import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 import com.example.project.chores.ui.ChoreNotFoundScreen
+import com.example.project.people.ui.PeopleRoute
+import com.example.project.settings.ui.SettingsRoute
+import com.example.project.weather.ui.WeatherRoute
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -56,6 +61,8 @@ fun ChoresApp(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val currentRoute = backStackEntry?.destination?.route
+    val isDetail = currentRoute == ChoreRoutes.DETAIL
     val resources = LocalResources.current
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -89,18 +96,51 @@ fun ChoresApp(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            if (backStackEntry?.destination?.route == ChoreRoutes.DETAIL) {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.chore_detail_title)) },
-                    navigationIcon = {
+            TopAppBar(
+                title = {
+                    when {
+                        isDetail -> Text(stringResource(R.string.chore_detail_title))
+                        currentRoute == ChoreRoutes.SETTINGS -> Text(stringResource(R.string.settings_title))
+                    }
+                },
+                navigationIcon = {
+                    if (isDetail || currentRoute == ChoreRoutes.SETTINGS) {
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_arrow_back),
                                 contentDescription = stringResource(R.string.chore_navigate_back),
                             )
                         }
-                    },
-                )
+                    }
+                },
+                actions = {
+                    if (!isDetail && currentRoute != ChoreRoutes.SETTINGS) {
+                        IconButton(onClick = { navController.navigate(ChoreRoutes.SETTINGS) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_settings),
+                                contentDescription = stringResource(R.string.navigation_settings),
+                            )
+                        }
+                    }
+                },
+            )
+        },
+        bottomBar = {
+            if (!isDetail && currentRoute != ChoreRoutes.SETTINGS) {
+                NavigationBar {
+                    listOf(
+                        Triple(ChoreRoutes.LIST, R.drawable.ic_home, R.string.navigation_chores),
+                        Triple(ChoreRoutes.PEOPLE, R.drawable.ic_people, R.string.navigation_people),
+                        Triple(ChoreRoutes.WEATHER, R.drawable.ic_weather, R.string.navigation_weather),
+                    ).forEach { (route, icon, label) ->
+                        NavigationBarItem(
+                            selected = currentRoute == route,
+                            onClick = { navController.navigate(route) },
+                            icon = { Icon(painterResource(icon), contentDescription = null) },
+                            label = { Text(stringResource(label)) },
+                        )
+                    }
+                }
             }
         },
     ) { innerPadding ->
@@ -122,6 +162,15 @@ fun ChoresApp(
                         onComplete = viewModel::complete,
                     )
                 }
+            }
+            composable(ChoreRoutes.PEOPLE) {
+                PeopleRoute(snackbarHostState = snackbarHostState)
+            }
+            composable(ChoreRoutes.WEATHER) {
+                WeatherRoute()
+            }
+            composable(ChoreRoutes.SETTINGS) {
+                SettingsRoute()
             }
             composable(
                 route = ChoreRoutes.DETAIL,

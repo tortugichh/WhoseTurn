@@ -63,4 +63,8 @@
     <string name="weather_tip_skip_watering">Дождь: можно не поливать растения</string>
     <string name="weather_tip_clear_entrance">Снег: почистить вход</string>
     <string name="weather_tip_do_laundry">Сухо: хороший день для стирки</string>
+    <string name="navigation_chores">Дела</string>
+    <string name="navigation_people">Люди</string>
+    <string name="navigation_weather">Погода</string>
+    <string name="navigation_settings">Настройки</string>
 </resources>
