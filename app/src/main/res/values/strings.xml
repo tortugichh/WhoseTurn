@@ -56,4 +56,8 @@
     <string name="people_delete_action">Удалить: %1$s</string>
     <string name="people_delete_title">Удалить «%1$s»?</string>
     <string name="people_delete_description">Человек уйдёт из всех очередей. Если сейчас его очередь, она перейдёт следующему.</string>
+    <string name="weather_title">Погода для дел</string>
+    <string name="weather_empty">Прогноз пока недоступен</string>
+    <string name="weather_temperatures">%1$d° / %2$d°</string>
+    <string name="weather_rain">Вероятность осадков: %1$d%%</string>
 </resources>
