@@ -50,6 +50,7 @@ import com.example.project.chores.ChoresViewModel
 import com.example.project.chores.ui.ChoreDetailScreen
 import com.example.project.chores.ui.ChoreListScreen
 import com.example.project.chores.ui.ChoreNotFoundScreen
+import com.example.project.people.Person
 import com.example.project.people.ui.PeopleRoute
 import com.example.project.settings.ui.SettingsRoute
 import com.example.project.weather.ui.WeatherRoute
@@ -161,9 +162,10 @@ fun ChoresApp(
             popExitTransition = { fadeOut(tween(200)) + slideOutHorizontally(tween(200)) { it / 12 } },
         ) {
             composable(ChoreRoutes.LIST) {
-                WithChores(state, viewModel::retry) { chores ->
+                WithChores(state, viewModel::retry) { chores, people ->
                     ChoreListScreen(
                         chores = chores,
+                        people = people,
                         onOpenChore = { taskId ->
                             navController.navigate(ChoreRoutes.detail(taskId)) {
                                 launchSingleTop = true
@@ -187,15 +189,16 @@ fun ChoresApp(
                 route = ChoreRoutes.DETAIL,
                 arguments = listOf(navArgument(ChoreRoutes.TASK_ID) { type = NavType.StringType }),
             ) { entry ->
-                WithChores(state, viewModel::retry) { chores ->
+                WithChores(state, viewModel::retry) { chores, people ->
                     val taskId = entry.arguments?.getString(ChoreRoutes.TASK_ID)
                     val chore = chores.find { it.id == taskId }
 
                     if (chore != null) {
                         ChoreDetailScreen(
                             chore = chore,
+                            people = people,
                             onComplete = { viewModel.complete(chore.id) },
-                            onRename = { title, icon -> viewModel.rename(chore.id, title, icon) },
+                            onEdit = { draft -> viewModel.update(chore.id, draft) },
                             onDelete = { viewModel.delete(chore.id) },
                         )
                     } else {
@@ -221,10 +224,10 @@ private fun NavHostController.navigateToTab(route: String) {
 private fun WithChores(
     state: ChoresUiState,
     onRetry: () -> Unit,
-    content: @Composable (List<Chore>) -> Unit,
+    content: @Composable (List<Chore>, List<Person>) -> Unit,
 ) {
     when (state) {
-        is ChoresUiState.Ready -> content(state.chores)
+        is ChoresUiState.Ready -> content(state.chores, state.people)
         ChoresUiState.Loading -> Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,

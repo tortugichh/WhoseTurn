@@ -154,7 +154,7 @@ fun PeopleScreen(
     if (renamingPerson != null) {
         PersonNameDialog(
             titleResource = R.string.people_rename_title,
-            confirmResource = R.string.chore_rename_confirm,
+            confirmResource = R.string.chore_edit_confirm,
             takenNames = takenNames,
             initialName = renamingPerson.name,
             onDismiss = { renamingId = null },

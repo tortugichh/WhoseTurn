@@ -9,18 +9,23 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.project.WhoseTurnApplication
 import com.example.project.chores.data.ChoresRepository
+import com.example.project.people.Person
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 sealed interface ChoresUiState {
     data object Loading : ChoresUiState
-    data class Ready(val chores: List<Chore>) : ChoresUiState
+    data class Ready(
+        val chores: List<Chore>,
+        val people: List<Person> = emptyList(),
+    ) : ChoresUiState
     data object Error : ChoresUiState
 }
 
@@ -47,12 +52,12 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
         loadJob?.cancel()
         _uiState.value = ChoresUiState.Loading
         loadJob = viewModelScope.launch {
-            repository.chores
+            combine(repository.chores, repository.people, ChoresUiState::Ready)
                 .catch { error ->
                     Log.e(TAG, "Could not load chores", error)
                     _uiState.value = ChoresUiState.Error
                 }
-                .collect { _uiState.value = ChoresUiState.Ready(it) }
+                .collect { _uiState.value = it }
         }
     }
 
@@ -61,12 +66,12 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
         eventChannel.send(ChoresEvent.Completed(nextPerson))
     }
 
-    fun add(title: String, icon: ChoreIcon) = write {
-        repository.add(title, icon)
+    fun add(draft: ChoreDraft) = write {
+        repository.add(draft.title, draft.icon, draft.memberIds, draft.repeatDays)
     }
 
-    fun rename(id: String, title: String, icon: ChoreIcon) = write {
-        repository.rename(id, title, icon)
+    fun update(id: String, draft: ChoreDraft) = write {
+        repository.update(id, draft.title, draft.icon, draft.memberIds, draft.repeatDays)
     }
 
     fun delete(id: String) = write {

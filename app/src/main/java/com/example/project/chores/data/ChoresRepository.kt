@@ -7,8 +7,10 @@ import com.example.project.data.AppDatabase
 import com.example.project.data.ChoreEntity
 import com.example.project.data.ChoreMemberEntity
 import com.example.project.data.PersonEntity
+import com.example.project.people.Person
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import java.util.UUID
 
 class ChoresRepository(
@@ -17,6 +19,10 @@ class ChoresRepository(
 ) {
     private val choreDao = database.choreDao()
     private val personDao = database.personDao()
+
+    val people: Flow<List<Person>> = personDao.observeAll().map { rows ->
+        rows.map { Person(id = it.id, name = it.name) }
+    }
 
     val chores: Flow<List<Chore>> = combine(
         choreDao.observeAll(),
@@ -54,13 +60,29 @@ class ChoresRepository(
         }
     }
 
-    suspend fun rename(id: String, title: String, icon: ChoreIcon? = null) {
+    suspend fun update(
+        id: String,
+        title: String,
+        icon: ChoreIcon,
+        memberIds: List<Long>,
+        repeatDays: Int,
+    ) {
         val trimmedTitle = title.trim()
         require(trimmedTitle.isNotEmpty())
 
         database.withTransaction {
             val chore = choreDao.find(id) ?: return@withTransaction
-            choreDao.update(chore.copy(title = trimmedTitle, icon = icon?.key ?: chore.icon))
+            val current = chore.currentPersonId?.takeIf { it in memberIds } ?: memberIds.firstOrNull()
+            choreDao.update(
+                chore.copy(
+                    title = trimmedTitle,
+                    icon = icon.key,
+                    currentPersonId = current,
+                    repeatDays = repeatDays,
+                ),
+            )
+            choreDao.deleteMembers(id)
+            saveMembers(id, memberIds)
         }
     }
 

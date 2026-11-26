@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,13 +26,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
-import com.example.project.chores.ChoreIcon
+import com.example.project.chores.ChoreDraft
+import com.example.project.chores.newChoreDraft
+import com.example.project.people.Person
 
 @Composable
 fun ChoreListScreen(
     chores: List<Chore>,
+    people: List<Person>,
     onOpenChore: (String) -> Unit,
-    onAdd: (String, ChoreIcon) -> Unit,
+    onAdd: (ChoreDraft) -> Unit,
     onComplete: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -87,13 +91,15 @@ fun ChoreListScreen(
     }
 
     if (showAddDialog) {
-        ChoreTitleDialog(
+        ChoreEditorDialog(
             titleResource = R.string.chore_add_title,
             confirmResource = R.string.chore_add_confirm,
+            people = people,
+            initial = remember { newChoreDraft(people, chores) },
             onDismiss = { showAddDialog = false },
-            onConfirm = { title, icon ->
+            onConfirm = { draft ->
                 showAddDialog = false
-                onAdd(title, icon)
+                onAdd(draft)
             },
         )
     }

@@ -9,7 +9,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.project.chores.Chore
 import com.example.project.chores.data.loadDemoChores
+import com.example.project.people.Person
 import com.example.project.ui.theme.ProjectTheme
+
+private val previewPeople = listOf(Person(1, "Асхат"), Person(2, "Данияр"), Person(3, "Нурмек"))
 
 private val initialChores: List<Chore> = loadDemoChores()
 
@@ -30,8 +33,9 @@ private fun ChoreListScreenInitialPreview() {
     PreviewSurface {
         ChoreListScreen(
             chores = initialChores,
+            people = previewPeople,
             onOpenChore = {},
-            onAdd = { _, _ -> },
+            onAdd = {},
             onComplete = {},
         )
     }
@@ -48,8 +52,9 @@ private fun ChoreListScreenCompletedPreview() {
     PreviewSurface {
         ChoreListScreen(
             chores = choresAfterTrash,
+            people = previewPeople,
             onOpenChore = {},
-            onAdd = { _, _ -> },
+            onAdd = {},
             onComplete = {},
         )
     }
@@ -87,8 +92,9 @@ private fun ChoreDetailScreenInitialPreview() {
     PreviewSurface {
         ChoreDetailScreen(
             chore = initialChores.first(),
+            people = previewPeople,
             onComplete = {},
-            onRename = { _, _ -> },
+            onEdit = {},
             onDelete = {},
         )
     }
@@ -101,8 +107,9 @@ private fun ChoreDetailScreenCompletedPreview() {
     PreviewSurface {
         ChoreDetailScreen(
             chore = choresAfterTrash.first(),
+            people = previewPeople,
             onComplete = {},
-            onRename = { _, _ -> },
+            onEdit = {},
             onDelete = {},
         )
     }

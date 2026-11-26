@@ -10,6 +10,14 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.project.R
 
 @Composable
+internal fun repeatLabel(days: Int): String = when (days) {
+    1 -> stringResource(R.string.chore_repeat_daily)
+    7 -> stringResource(R.string.chore_repeat_weekly)
+    14 -> stringResource(R.string.chore_repeat_two_weeks)
+    else -> stringResource(R.string.chore_repeat_days, days)
+}
+
+@Composable
 internal fun dueLabel(dueInDays: Int): String = when {
     dueInDays < 0 -> stringResource(R.string.chore_due_overdue, -dueInDays)
     dueInDays == 0 -> stringResource(R.string.chore_due_today)

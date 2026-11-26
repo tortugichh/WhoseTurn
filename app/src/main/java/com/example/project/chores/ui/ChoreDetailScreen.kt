@@ -31,14 +31,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.project.R
 import com.example.project.chores.Chore
-import com.example.project.chores.ChoreIcon
+import com.example.project.chores.ChoreDraft
+import com.example.project.chores.toDraft
+import com.example.project.people.Person
 import com.example.project.people.ui.PersonAvatar
 
 @Composable
 fun ChoreDetailScreen(
     chore: Chore,
+    people: List<Person>,
     onComplete: () -> Unit,
-    onRename: (String, ChoreIcon) -> Unit,
+    onEdit: (ChoreDraft) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -96,6 +99,14 @@ fun ChoreDetailScreen(
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }
+                    Text(
+                        text = stringResource(
+                            R.string.chore_schedule,
+                            dueLabel(chore.dueInDays),
+                            repeatLabel(chore.repeatDays),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                     chore.lastCompletedBy?.let { name ->
                         Text(
                             text = stringResource(R.string.chore_last_completed_by, name),
@@ -122,8 +133,8 @@ fun ChoreDetailScreen(
         }
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { dialog = ChoreDialog.Rename }) {
-                Text(stringResource(R.string.chore_rename_action))
+            TextButton(onClick = { dialog = ChoreDialog.Edit }) {
+                Text(stringResource(R.string.chore_edit_action))
             }
             TextButton(onClick = { dialog = ChoreDialog.Delete }) {
                 Text(
@@ -135,15 +146,15 @@ fun ChoreDetailScreen(
     }
 
     when (dialog) {
-        ChoreDialog.Rename -> ChoreTitleDialog(
-            titleResource = R.string.chore_rename_title,
-            confirmResource = R.string.chore_rename_confirm,
-            initialTitle = chore.title,
-            initialIcon = chore.icon,
+        ChoreDialog.Edit -> ChoreEditorDialog(
+            titleResource = R.string.chore_edit_title,
+            confirmResource = R.string.chore_edit_confirm,
+            people = people,
+            initial = chore.toDraft(),
             onDismiss = { dialog = null },
-            onConfirm = { title, icon ->
+            onConfirm = { draft ->
                 dialog = null
-                onRename(title, icon)
+                onEdit(draft)
             },
         )
         ChoreDialog.Delete -> AlertDialog(
@@ -173,7 +184,7 @@ fun ChoreDetailScreen(
     }
 }
 
-private enum class ChoreDialog { Rename, Delete }
+private enum class ChoreDialog { Edit, Delete }
 
 @Composable
 private fun ParticipantRotation(
