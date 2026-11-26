@@ -15,3 +15,4 @@ An Android app for sharing household chores. Each chore has its own participant 
 - See who completed each chore most recently.
 - Choose who takes part in each chore and in what order; a new chore starts with the least busy person.
 - Set how often a chore repeats; the list is sorted by due date and shows overdue chores.
+- Skip a turn without marking the chore as done.

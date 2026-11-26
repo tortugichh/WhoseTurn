@@ -31,6 +31,8 @@
     <string name="chore_due_in">Через %1$d дн.</string>
     <string name="chore_due_overdue">Просрочено на %1$d дн.</string>
     <string name="chore_schedule">%1$s · %2$s</string>
+    <string name="chore_skip_action">Пропустить</string>
+    <string name="chore_skip_feedback">Ход передан: %1$s</string>
     <string name="chore_delete_action">Удалить</string>
     <string name="chore_delete_title">Удалить дело?</string>
     <string name="chore_navigate_back">Назад</string>

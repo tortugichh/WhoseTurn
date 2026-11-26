@@ -41,6 +41,7 @@ fun ChoreDetailScreen(
     chore: Chore,
     people: List<Person>,
     onComplete: () -> Unit,
+    onSkip: () -> Unit,
     onEdit: (ChoreDraft) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
@@ -133,6 +134,12 @@ fun ChoreDetailScreen(
         }
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(
+                onClick = onSkip,
+                enabled = participant != null && chore.participants.size > 1,
+            ) {
+                Text(stringResource(R.string.chore_skip_action))
+            }
             TextButton(onClick = { dialog = ChoreDialog.Edit }) {
                 Text(stringResource(R.string.chore_edit_action))
             }

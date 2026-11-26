@@ -94,6 +94,7 @@ private fun ChoreDetailScreenInitialPreview() {
             chore = initialChores.first(),
             people = previewPeople,
             onComplete = {},
+            onSkip = {},
             onEdit = {},
             onDelete = {},
         )
@@ -109,6 +110,7 @@ private fun ChoreDetailScreenCompletedPreview() {
             chore = choresAfterTrash.first(),
             people = previewPeople,
             onComplete = {},
+            onSkip = {},
             onEdit = {},
             onDelete = {},
         )

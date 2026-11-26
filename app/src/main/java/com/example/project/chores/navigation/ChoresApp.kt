@@ -81,6 +81,7 @@ fun ChoresApp(
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                     resources.getString(R.string.chore_complete_feedback, event.nextPerson)
                 }
+                is ChoresEvent.Skipped -> resources.getString(R.string.chore_skip_feedback, event.nextPerson)
                 is ChoresEvent.Deleted -> {
                     val currentEntry = navController.currentBackStackEntry
                     if (currentEntry?.destination?.route == ChoreRoutes.DETAIL &&
@@ -198,6 +199,7 @@ fun ChoresApp(
                             chore = chore,
                             people = people,
                             onComplete = { viewModel.complete(chore.id) },
+                            onSkip = { viewModel.skip(chore.id) },
                             onEdit = { draft -> viewModel.update(chore.id, draft) },
                             onDelete = { viewModel.delete(chore.id) },
                         )

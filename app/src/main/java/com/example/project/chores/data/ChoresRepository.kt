@@ -90,20 +90,23 @@ class ChoresRepository(
         choreDao.delete(id)
     }
 
-    suspend fun complete(id: String): String? = database.withTransaction {
+    suspend fun complete(id: String): String? = passTurn(id) { chore, currentName ->
+        chore.copy(lastCompletedBy = currentName, dueDay = today() + chore.repeatDays)
+    }
+
+    suspend fun skip(id: String): String? = passTurn(id) { chore, _ -> chore }
+
+    private suspend fun passTurn(
+        id: String,
+        change: (ChoreEntity, String) -> ChoreEntity,
+    ): String? = database.withTransaction {
         val chore = choreDao.find(id) ?: return@withTransaction null
         val people = personDao.getAll().associateBy { it.id }
         val current = chore.currentPersonId?.let(people::get) ?: return@withTransaction null
         val next = choreDao.memberIds(id).nextAfter(current.id)?.let(people::get)
             ?: return@withTransaction null
 
-        choreDao.update(
-            chore.copy(
-                currentPersonId = next.id,
-                lastCompletedBy = current.name,
-                dueDay = today() + chore.repeatDays,
-            ),
-        )
+        choreDao.update(change(chore, current.name).copy(currentPersonId = next.id))
         next.name
     }
 

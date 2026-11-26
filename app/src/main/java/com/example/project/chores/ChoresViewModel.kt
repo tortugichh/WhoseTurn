@@ -32,6 +32,7 @@ sealed interface ChoresUiState {
 internal sealed interface ChoresEvent {
     data object WriteFailed : ChoresEvent
     data class Completed(val nextPerson: String) : ChoresEvent
+    data class Skipped(val nextPerson: String) : ChoresEvent
     data class Deleted(val choreId: String) : ChoresEvent
 }
 
@@ -64,6 +65,11 @@ class ChoresViewModel(private val repository: ChoresRepository) : ViewModel() {
     fun complete(taskId: String) = write {
         val nextPerson = repository.complete(taskId) ?: return@write
         eventChannel.send(ChoresEvent.Completed(nextPerson))
+    }
+
+    fun skip(taskId: String) = write {
+        val nextPerson = repository.skip(taskId) ?: return@write
+        eventChannel.send(ChoresEvent.Skipped(nextPerson))
     }
 
     fun add(draft: ChoreDraft) = write {
