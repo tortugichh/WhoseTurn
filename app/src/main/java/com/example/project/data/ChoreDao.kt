@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChoreDao {
-    @Query("SELECT * FROM chores ORDER BY id")
+    @Query("SELECT * FROM chores ORDER BY dueDay, title")
     fun observeAll(): Flow<List<ChoreEntity>>
+
+    @Query("SELECT * FROM chores")
+    suspend fun getAll(): List<ChoreEntity>
 
     @Query("SELECT * FROM chores WHERE id = :id")
     suspend fun find(id: String): ChoreEntity?
@@ -23,21 +26,18 @@ interface ChoreDao {
     @Query("DELETE FROM chores WHERE id = :id")
     suspend fun delete(id: String)
 
-    @Query(
-        """
-        UPDATE chores
-        SET currentPersonId = CASE WHEN currentPersonId = :id THEN :nextId ELSE currentPersonId END,
-            startPersonId = CASE WHEN startPersonId = :id THEN :nextId ELSE startPersonId END
-        WHERE currentPersonId = :id OR startPersonId = :id
-        """,
-    )
-    suspend fun replacePerson(id: Long, nextId: Long?)
+    @Query("SELECT * FROM chore_members ORDER BY choreId, position")
+    fun observeMembers(): Flow<List<ChoreMemberEntity>>
 
-    @Query(
-        """
-        UPDATE chores SET currentPersonId = :id, startPersonId = :id
-        WHERE currentPersonId IS NULL AND startPersonId IS NULL
-        """,
-    )
-    suspend fun assignUnassignedTurns(id: Long)
+    @Query("SELECT personId FROM chore_members WHERE choreId = :choreId ORDER BY position")
+    suspend fun memberIds(choreId: String): List<Long>
+
+    @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM chore_members WHERE choreId = :choreId")
+    suspend fun nextPosition(choreId: String): Int
+
+    @Insert
+    suspend fun insertMembers(members: List<ChoreMemberEntity>)
+
+    @Query("DELETE FROM chore_members WHERE choreId = :choreId")
+    suspend fun deleteMembers(choreId: String)
 }

@@ -1,7 +1,9 @@
 package com.example.project.people.data
 
 import androidx.room.withTransaction
+import com.example.project.chores.data.nextAfter
 import com.example.project.data.AppDatabase
+import com.example.project.data.ChoreMemberEntity
 import com.example.project.data.PersonEntity
 import com.example.project.people.Person
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +23,13 @@ class PeopleRepository(private val database: AppDatabase) {
 
         database.withTransaction {
             val id = personDao.insert(PersonEntity(name = trimmedName))
-            choreDao.assignUnassignedTurns(id)
+            choreDao.getAll().forEach { chore ->
+                val position = choreDao.nextPosition(chore.id)
+                choreDao.insertMembers(listOf(ChoreMemberEntity(chore.id, id, position)))
+                if (chore.currentPersonId == null) {
+                    choreDao.update(chore.copy(currentPersonId = id))
+                }
+            }
         }
     }
 
@@ -33,13 +41,11 @@ class PeopleRepository(private val database: AppDatabase) {
 
     suspend fun delete(id: Long) {
         database.withTransaction {
-            val remainingPeople = personDao.getAll().filterNot { it.id == id }
-            val nextId = remainingPeople.nextAfter(id)?.id
-            choreDao.replacePerson(id, nextId)
+            choreDao.getAll().filter { it.currentPersonId == id }.forEach { chore ->
+                val nextId = choreDao.memberIds(chore.id).nextAfter(id)?.takeIf { it != id }
+                choreDao.update(chore.copy(currentPersonId = nextId))
+            }
             personDao.delete(id)
         }
     }
 }
-
-internal fun List<PersonEntity>.nextAfter(personId: Long): PersonEntity? =
-    firstOrNull { it.id > personId } ?: firstOrNull()

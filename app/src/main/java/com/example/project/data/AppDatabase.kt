@@ -5,11 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.project.chores.data.currentEpochDay
 import com.example.project.chores.data.loadDemoChores
 
 @Database(
-    entities = [ChoreEntity::class, PersonEntity::class],
-    version = 1,
+    entities = [ChoreEntity::class, PersonEntity::class, ChoreMemberEntity::class],
+    version = 2,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -20,7 +21,22 @@ abstract class AppDatabase : RoomDatabase() {
         private const val DATABASE_NAME = "whose-turn.db"
 
         internal val demoSeed = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
+            private var seedAfterUpgrade = false
+
+            override fun onCreate(db: SupportSQLiteDatabase) = seed(db)
+
+            override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                seedAfterUpgrade = true
+            }
+
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                if (seedAfterUpgrade) {
+                    seedAfterUpgrade = false
+                    seed(db)
+                }
+            }
+
+            private fun seed(db: SupportSQLiteDatabase) {
                 val chores = loadDemoChores()
                 val personIds = chores.first().participants
                     .mapIndexed { index, name -> name to (index + 1L) }
@@ -33,15 +49,29 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 }
 
+                val today = currentEpochDay()
                 chores.forEach { chore ->
-                    val startId = personIds.getValue(chore.participants.first())
+                    val memberIds = chore.participants.map(personIds::getValue)
                     db.execSQL(
                         """
-                        INSERT INTO chores (id, title, icon, currentPersonId, startPersonId)
-                        VALUES (?, ?, ?, ?, ?)
+                        INSERT INTO chores (id, title, icon, currentPersonId, repeatDays, dueDay)
+                        VALUES (?, ?, ?, ?, ?, ?)
                         """.trimIndent(),
-                        arrayOf<Any>(chore.id, chore.title, chore.icon.key, startId, startId),
+                        arrayOf<Any>(
+                            chore.id,
+                            chore.title,
+                            chore.icon.key,
+                            memberIds.first(),
+                            chore.repeatDays,
+                            today + chore.dueInDays,
+                        ),
                     )
+                    memberIds.forEachIndexed { position, personId ->
+                        db.execSQL(
+                            "INSERT INTO chore_members (choreId, personId, position) VALUES (?, ?, ?)",
+                            arrayOf<Any>(chore.id, personId, position),
+                        )
+                    }
                 }
             }
         }
@@ -49,6 +79,7 @@ abstract class AppDatabase : RoomDatabase() {
         fun create(context: Context): AppDatabase =
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, DATABASE_NAME)
                 .addCallback(demoSeed)
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()
     }
 }

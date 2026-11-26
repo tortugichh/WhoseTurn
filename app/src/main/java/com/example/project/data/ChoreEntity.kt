@@ -13,19 +13,15 @@ import androidx.room.PrimaryKey
             parentColumns = ["id"],
             childColumns = ["currentPersonId"],
         ),
-        ForeignKey(
-            entity = PersonEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["startPersonId"],
-        ),
     ],
-    indices = [Index("currentPersonId"), Index("startPersonId")],
+    indices = [Index("currentPersonId")],
 )
 data class ChoreEntity(
     @PrimaryKey val id: String,
     val title: String,
     val icon: String = "home",
     val currentPersonId: Long?,
-    val startPersonId: Long?,
+    val repeatDays: Int = 7,
+    val dueDay: Long,
     val lastCompletedBy: String? = null,
 )

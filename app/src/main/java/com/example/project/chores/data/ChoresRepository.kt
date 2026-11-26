@@ -5,36 +5,52 @@ import com.example.project.chores.Chore
 import com.example.project.chores.ChoreIcon
 import com.example.project.data.AppDatabase
 import com.example.project.data.ChoreEntity
+import com.example.project.data.ChoreMemberEntity
 import com.example.project.data.PersonEntity
-import com.example.project.people.data.nextAfter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.util.UUID
 
-class ChoresRepository(private val database: AppDatabase) {
+class ChoresRepository(
+    private val database: AppDatabase,
+    private val today: () -> Long = { currentEpochDay() },
+) {
     private val choreDao = database.choreDao()
     private val personDao = database.personDao()
 
-    val chores: Flow<List<Chore>> =
-        combine(choreDao.observeAll(), personDao.observeAll()) { chores, people ->
-            chores.map { it.toChore(people) }
-        }
+    val chores: Flow<List<Chore>> = combine(
+        choreDao.observeAll(),
+        choreDao.observeMembers(),
+        personDao.observeAll(),
+    ) { chores, members, people ->
+        val membersByChore = members.groupBy({ it.choreId }, { it.personId })
+        val day = today()
+        chores.map { it.toChore(membersByChore[it.id].orEmpty(), people, day) }
+    }
 
-    suspend fun add(title: String, icon: ChoreIcon = ChoreIcon.Home) {
+    suspend fun add(
+        title: String,
+        icon: ChoreIcon = ChoreIcon.Home,
+        memberIds: List<Long>? = null,
+        repeatDays: Int = 7,
+    ) {
         val trimmedTitle = title.trim()
         require(trimmedTitle.isNotEmpty())
 
         database.withTransaction {
-            val startId = personDao.getAll().firstOrNull()?.id
+            val members = memberIds ?: personDao.getAll().map { it.id }
+            val id = UUID.randomUUID().toString()
             choreDao.insert(
                 ChoreEntity(
-                    id = UUID.randomUUID().toString(),
+                    id = id,
                     title = trimmedTitle,
                     icon = icon.key,
-                    currentPersonId = startId,
-                    startPersonId = startId,
+                    currentPersonId = members.firstOrNull(),
+                    repeatDays = repeatDays,
+                    dueDay = today(),
                 ),
             )
+            saveMembers(id, members)
         }
     }
 
@@ -52,34 +68,45 @@ class ChoresRepository(private val database: AppDatabase) {
         choreDao.delete(id)
     }
 
-    suspend fun complete(id: String): String? =
-        database.withTransaction {
-            val chore = choreDao.find(id) ?: return@withTransaction null
-            val people = personDao.getAll()
-            val current = people.find { it.id == chore.currentPersonId }
-                ?: return@withTransaction null
-            val next = people.nextAfter(current.id) ?: return@withTransaction null
+    suspend fun complete(id: String): String? = database.withTransaction {
+        val chore = choreDao.find(id) ?: return@withTransaction null
+        val people = personDao.getAll().associateBy { it.id }
+        val current = chore.currentPersonId?.let(people::get) ?: return@withTransaction null
+        val next = choreDao.memberIds(id).nextAfter(current.id)?.let(people::get)
+            ?: return@withTransaction null
 
-            choreDao.update(
-                chore.copy(
-                    currentPersonId = next.id,
-                    lastCompletedBy = current.name,
-                ),
-            )
-            next.name
-        }
+        choreDao.update(
+            chore.copy(
+                currentPersonId = next.id,
+                lastCompletedBy = current.name,
+                dueDay = today() + chore.repeatDays,
+            ),
+        )
+        next.name
+    }
+
+    private suspend fun saveMembers(choreId: String, memberIds: List<Long>) {
+        choreDao.insertMembers(
+            memberIds.distinct().mapIndexed { position, personId ->
+                ChoreMemberEntity(choreId = choreId, personId = personId, position = position)
+            },
+        )
+    }
 }
 
-private fun ChoreEntity.toChore(people: List<PersonEntity>): Chore {
-    val startIndex = people.indexOfFirst { it.id == startPersonId }.coerceAtLeast(0)
-    val rotation = people.drop(startIndex) + people.take(startIndex)
+private fun ChoreEntity.toChore(memberIds: List<Long>, people: List<PersonEntity>, today: Long): Chore {
+    val names = people.associate { it.id to it.name }
+    val members = memberIds.filter(names::containsKey)
 
     return Chore(
         id = id,
         title = title,
-        participants = rotation.map { it.name },
-        currentIndex = rotation.indexOfFirst { it.id == currentPersonId }.coerceAtLeast(0),
+        participants = members.map(names::getValue),
+        currentIndex = members.indexOf(currentPersonId).coerceAtLeast(0),
         lastCompletedBy = lastCompletedBy,
         icon = ChoreIcon.fromKey(icon),
+        participantIds = members,
+        repeatDays = repeatDays,
+        dueInDays = (dueDay - today).toInt(),
     )
 }
