@@ -20,6 +20,10 @@
     <string name="chore_rename_title">Переименовать дело</string>
     <string name="chore_rename_confirm">Сохранить</string>
     <string name="chore_delete_action">Удалить</string>
+    <string name="chore_due_today">Сегодня</string>
+    <string name="chore_due_tomorrow">Завтра</string>
+    <string name="chore_due_in">Через %1$d дн.</string>
+    <string name="chore_due_overdue">Просрочено на %1$d дн.</string>
     <string name="chore_delete_title">Удалить дело?</string>
     <string name="chore_navigate_back">Назад</string>
     <string name="chore_not_found">Дело не найдено</string>

@@ -55,6 +55,10 @@ fun ChoreCard(
                     ),
                     label = R.string.chore_card_assignee,
                 )
+                ChoreDueLabel(
+                    dueInDays = chore.dueInDays,
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
 
             if (participant != null) {
